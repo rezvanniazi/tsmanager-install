@@ -182,7 +182,7 @@ install_panel() {
 	mkdir -p certs
 
 	
-	if ([[ "${ipv4}" == "localhost" || "${ipv4}" == "127.0.0.1"]]); then
+	if ([[ "${ipv4}" == "localhost" || "${ipv4}" == "127.0.0.1" ]]); then
 		usingHttps=0
 		sed -i "s/useHttps: \"1\"/useHttps: \"0\"/g" config.yml
 
