@@ -1,0 +1,14 @@
+[Unit]
+Description=Manager Service
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/usr/local/mtxpanel-linux-x64/
+ExecStart=/usr/local/mtxpanel-linux-x64/ts-panel
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
