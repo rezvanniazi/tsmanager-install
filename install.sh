@@ -174,7 +174,7 @@ install_panel() {
 	
 	mkdir -p tsmanager-${manager_port}
 
-	tar -xvzf tsmanager-${manager_port}.tar.gz -C tsmanager-${manager_port}
+	tar -xvzf tsmanager-linux-x64.tar.gz -C tsmanager-${manager_port}
 	wait
 
 	cd tsmanager-${manager_port}
@@ -225,7 +225,7 @@ install_panel() {
 	
 
 
-	if ([[${usingHttps} == 1]]); then
+	if ([[ ${usingHttps} == 1 ]]); then
 		echo -e "${green}Ip manager shoma: https://$domain_name:$manager_port${plain}"
 	else
 		echo -e "${green}Ip manager shoma: http://$ipv4:$manager_port${plain}"
