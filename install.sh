@@ -103,7 +103,7 @@ install_panel() {
 	# curl backend
 	local server_ip=$(curl -s https://api.ipify.org)
 
-	echo -e "Lotfan port manager ra vared konid: " manager_port
+	read -e "Lotfan port manager ra vared konid: " manager_port
 	mkdir -p /usr/local/TsManager
 
 	cd /usr/local/TsManager
