@@ -103,7 +103,7 @@ install_panel() {
 	# curl backend
 	local server_ip=$(curl -s https://api.ipify.org)
 
-	echo -p "Lotfan port manager ra vared konid: " manager_port
+	echo -e "Lotfan port manager ra vared konid: " manager_port
 	mkdir -p /usr/local/TsManager
 
 	cd /usr/local/TsManager
@@ -174,7 +174,7 @@ install_panel() {
 	
 	mkdir -p tsmanager-${manager_port}
 
-	tar -xvzf mtxpanel-linux-x64.tar.gz -C tsmanager-${manager_port}
+	tar -xvzf tsmanager-${manager_port}.tar.gz -C tsmanager-${manager_port}
 	wait
 
 	cd tsmanager-${manager_port}
