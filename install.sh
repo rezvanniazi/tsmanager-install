@@ -201,7 +201,7 @@ install_panel() {
 	sed -i "s/host: \"localhost\"/host: \"$ipv4\"/g" config.yml
 	sed -i "s/username: \"temp\"/username: \"$mysql_username\"/g" config.yml
 	sed -i "s/password: \"temp\"/password: \"$mysql_password\"/g" config.yml
-	sed -i "s/database: \"temp\"/database: \"${tsmanager}-${manager_port}\"/g" config.yml
+	sed -i "s/database: \"temp\"/database: \"tsmanager-${manager_port}\"/g" config.yml
 	sed -i "s/api_key: \"api_key\"/api_key: \"$api_token\"/g" config.yml
 
 
