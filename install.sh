@@ -212,6 +212,8 @@ install_panel() {
 
 		[Service]
 		Type=simple
+		StandardOutput=file:/var/log/tsmanager-${manager_port}.log
+		StandardError=file:/var/log/tsmanager-${manager_port}-error.log
 		WorkingDirectory=/usr/local/tsmanager-${manager_port}/
 		ExecStart=/usr/local/tsmanager-${manager_port}/TsManager
 		Restart=on-failure
