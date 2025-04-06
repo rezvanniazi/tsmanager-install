@@ -206,21 +206,21 @@ install_panel() {
 
 
 	echo "[Unit]
-		Description=Manager ${manager_port} Service
-		After=network.target
-		Wants=network.target
+	Description=Manager ${manager_port} Service
+	After=network.target
+	Wants=network.target
 
-		[Service]
-		Type=simple
-		StandardOutput=file:/var/log/tsmanager-${manager_port}.log
-		StandardError=file:/var/log/tsmanager-${manager_port}-error.log
-		WorkingDirectory=/usr/local/tsmanager-${manager_port}/
-		ExecStart=/usr/local/tsmanager-${manager_port}/TsManager
-		Restart=on-failure
-		RestartSec=5s
+[Service]
+	Type=simple
+	StandardOutput=file:/var/log/tsmanager-${manager_port}.log
+	StandardError=file:/var/log/tsmanager-${manager_port}-error.log
+	WorkingDirectory=/usr/local/tsmanager-${manager_port}/
+	ExecStart=/usr/local/tsmanager-${manager_port}/TsManager
+	Restart=on-failure
+	RestartSec=5s
 
-		[Install]
-		WantedBy=multi-user.target" > /etc/systemd/system/tsmanager-${manager_port}.service
+[Install]
+	WantedBy=multi-user.target" > /etc/systemd/system/tsmanager-${manager_port}.service
 
 
 	systemctl enable tsmanager-${manager_port}.service
