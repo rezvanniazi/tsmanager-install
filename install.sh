@@ -176,7 +176,7 @@ install_panel() {
 
 	tar -xvzf tsmanager-linux-x64.tar.gz -C tsmanager-${manager_port}
 	wait
-	rm tsmanager-linux-x64
+	rm tsmanager-linux-x64.tar.gz
 
 
 	cd tsmanager-${manager_port}
