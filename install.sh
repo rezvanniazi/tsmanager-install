@@ -236,6 +236,8 @@ install_panel() {
 
 	fi
 
+	echo -e "${green} Token Api Shoma: ${api_token}${plain}"
+
 	exit 0
 }
 
