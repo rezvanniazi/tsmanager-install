@@ -113,7 +113,7 @@ install_panel() {
 	if ([[ -e /usr/local/TsManager/tsmanager-${manager_port} ]]); then
 		cd tsmanager-${manager_port}
 		systemctl stop tsmanager-${manager_port}
-		api_token=$(grep 'api_token:' config.yml | awk -F': ' '{print $2}' | tr -d '"')
+		api_token=$(grep 'api_key:' config.yml | awk -F': ' '{print $2}' | tr -d '"')
 		mysql_username=$(grep 'username:' config.yml | awk -F': ' '{print $2}' | tr -d '"')
 		mysql_password=$(grep 'password:' config.yml | awk -F': ' '{print $2}' | tr -d '"')
 
