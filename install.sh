@@ -79,22 +79,22 @@ gen_random_string() {
 install_base() {
     case "${release}" in
     ubuntu | debian | armbian)
-        apt-get update && apt-get install -y -q wget curl tar mariadb-server certbot jq
+        apt-get update && apt-get install -y -q wget curl tar mariadb-server certbot jq openssl
         ;;
     centos | almalinux | rocky | ol)
-        yum -y update && yum install -y -q wget curl tar mariadb-server certbot jq
+        yum -y update && yum install -y -q wget curl tar mariadb-server certbot jq openssl
         ;;
     fedora | amzn | virtuozzo)
-        dnf -y update && dnf install -y -q wget curl tar mariadb-server certbot jq
+        dnf -y update && dnf install -y -q wget curl tar mariadb-server certbot jq openssl
         ;;
     arch | manjaro | parch)
-        pacman -Syu && pacman -Syu --noconfirm wget curl tar mariadb-server certbot jq
+        pacman -Syu && pacman -Syu --noconfirm wget curl tar mariadb-server certbot jq openssl
         ;;
     opensuse-tumbleweed)
-        zypper refresh && zypper -q install -y wget curl tar mariadb-server certbot jq
+        zypper refresh && zypper -q install -y wget curl tar mariadb-server certbot jq openssl
         ;;
     *)
-        apt-get update && apt install -y -q wget curl tar mariadb-server certbot jq
+        apt-get update && apt install -y -q wget curl tar mariadb-server certbot jq openssl
         ;;
     esac
 }
@@ -112,17 +112,29 @@ install_panel() {
 
 	if ([[ -e /usr/local/TsManager/tsmanager-${manager_port} ]]); then
 		cd tsmanager-${manager_port}
-		systemctl stop tsmanager-${manager_port}
-		api_token=$(grep 'api_key:' config.yml | awk -F': ' '{print $2}' | tr -d '"')
-		mysql_username=$(grep 'username:' config.yml | awk -F': ' '{print $2}' | tr -d '"')
-		mysql_password=$(grep 'password:' config.yml | awk -F': ' '{print $2}' | tr -d '"')
-
+		if [[ -f .env ]]; then
+			echo "Reading configuration from .env file..."
+			# Use the robust loading method
+			set -a
+			source .env
+			set +a
+			
+			backend_port="$PORT"
+			mysql_username="$MYSQL_USERNAME"
+			mysql_password="$MYSQL_PASSWORD"
+			mysql_database="$MYSQL_DATABASE"
+			mysql_host="$MYSQL_HOST"
+		else
+			echo "Error: .env file not found!"
+			exit 1
+		fi
+    
 		cd ..
-		rm -rf tsmanager-${manager_port}
+		rm -rf mtxpanel-linux-x64
 	else
 		read -p "lotfan user mysql ra vared konid: " mysql_username
 		read -p "lotfan password mysql ra vared konid: " mysql_password
-		api_token=$(gen_random_string 20)
+		api_token=$(openssl rand -base64 32w)
 
 	fi
 
@@ -138,14 +150,14 @@ install_panel() {
 
 	# Verify token by making an authenticated API request
 	response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${github_token}" \
-	"https://api.github.com/repos/rezvanniazi/Ts-Manager-Bot/releases/latest")
+	"https://api.github.com/repos/rezvanniazi/ts-manager-bot-websocket/releases/latest")
 
 	if [ "$response" -eq 200 ]; then
 		echo "✅ Token is valid. Proceeding..."
 		
 		# Get asset ID (original logic)
 		asset_id=$(curl -Ls -H "Authorization: Bearer ${github_token}" \
-		"https://api.github.com/repos/rezvanniazi/Ts-Manager-Bot/releases/latest" | \
+		"https://api.github.com/repos/rezvanniazi/ts-manager-bot-websocket/releases/latest" | \
 		jq -r '.assets[] | select(.name == "tsmanager-linux-x64.tar.gz") | .id')
 
 		if [ -n "$asset_id" ]; then
@@ -164,7 +176,7 @@ install_panel() {
 		exit 1
 	fi
 
-	curl -L -H "Authorization: Bearer ${github_token}"   -H "Accept: application/octet-stream"   https://api.github.com/repos/rezvanniazi/Ts-Manager-Bot/releases/assets/${asset_id} --output tsmanager-linux-x64.tar.gz
+	curl -L -H "Authorization: Bearer ${github_token}"   -H "Accept: application/octet-stream"   https://api.github.com/repos/rezvanniazi/ts-manager-bot-websocket/releases/assets/${asset_id} --output tsmanager-linux-x64.tar.gz
 
 
 	if [[ $? -ne 0 ]]; then
@@ -185,24 +197,37 @@ install_panel() {
 
 	
 	if ([[ "${ipv4}" == "localhost" || "${ipv4}" == "127.0.0.1" ]]); then
-		usingHttps=0
-		sed -i "s/useHttps: \"1\"/useHttps: \"0\"/g" config.yml
+		node_env="development"
 
 	else
-		usingHttps=1
+		node_env="production"
 		read -p "damane khod ra vared konid: " domain_name
+
+		mkdir certs
+
 		certbot certonly --standalone --non-interactive --agree-tos --email rezvanniazi@proton.me -d $domain_name
 		ln -s /etc/letsencrypt/live/$domain_name/fullchain.pem certs/
 		ln -s /etc/letsencrypt/live/$domain_name/privkey.pem certs/
 	fi
 
 
-	sed -i "s/port: \"1111\"/port: \"$manager_port\"/g" config.yml
-	sed -i "s/host: \"localhost\"/host: \"$ipv4\"/g" config.yml
-	sed -i "s/username: \"temp\"/username: \"$mysql_username\"/g" config.yml
-	sed -i "s/password: \"temp\"/password: \"$mysql_password\"/g" config.yml
-	sed -i "s/database: \"temp\"/database: \"tsmanager_${manager_port}\"/g" config.yml
-	sed -i "s/api_key: \"api_key\"/api_key: \"$api_token\"/g" config.yml
+
+cat > /usr/local/mtxpanel-linux-x64/.env << EOF
+NODE_ENV=$node_env
+
+PORT=$manager_port
+
+MYSQL_HOST="localhost"
+MYSQL_USERNAME="$mysql_username"
+MYSQL_PASSWORD="$mysql_password"
+MYSQL_DATABASE="$mysql_database"
+STATIC_TOKEN=$api_token
+
+WEATHER_LIST_CHECK="*/10 * * * *"
+PRICE_LIST_CHECK="*/10 * * * *"
+
+EOF
+
 
 
 	echo "[Unit]
@@ -212,8 +237,6 @@ install_panel() {
 
 [Service]
 	Type=simple
-	StandardOutput=file:/var/log/tsmanager-${manager_port}.log
-	StandardError=file:/var/log/tsmanager-${manager_port}-error.log
 	WorkingDirectory=/usr/local/TsManager/tsmanager-${manager_port}/
 	ExecStart=/usr/local/TsManager/tsmanager-${manager_port}/TsManager
 	Restart=on-failure
