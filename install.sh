@@ -134,7 +134,7 @@ install_panel() {
 	else
 		read -p "lotfan user mysql ra vared konid: " mysql_username
 		read -p "lotfan password mysql ra vared konid: " mysql_password
-		api_token=$(openssl rand -base64 32w)
+		api_token=$(openssl rand -base64 32)
 
 	fi
 
