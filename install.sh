@@ -112,6 +112,7 @@ install_panel() {
 
 	if ([[ -e /usr/local/TsManager/tsmanager-${manager_port} ]]); then
 		cd tsmanager-${manager_port}
+
 		if [[ -f .env ]]; then
 			echo "Reading configuration from .env file..."
 			# Use the robust loading method
@@ -123,6 +124,7 @@ install_panel() {
 			mysql_username="$MYSQL_USERNAME"
 			mysql_password="$MYSQL_PASSWORD"
 			mysql_database="$MYSQL_DATABASE"
+			api_token="$STATIC_TOKEN"
 			mysql_host="$MYSQL_HOST"
 		else
 			echo "Error: .env file not found!"
@@ -134,6 +136,7 @@ install_panel() {
 	else
 		read -p "lotfan user mysql ra vared konid: " mysql_username
 		read -p "lotfan password mysql ra vared konid: " mysql_password
+		mysql_database="tsmanager_$manager_port"
 		api_token=$(openssl rand -base64 32)
 
 	fi
@@ -212,7 +215,7 @@ install_panel() {
 
 
 
-cat > /usr/local/mtxpanel-linux-x64/.env << EOF
+cat > /usr/local/TsManager/tsmanager-$manager_port/.env << EOF
 NODE_ENV=$node_env
 
 PORT=$manager_port
