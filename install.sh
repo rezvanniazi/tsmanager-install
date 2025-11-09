@@ -113,6 +113,8 @@ install_panel() {
 	if ([[ -e /usr/local/TsManager/tsmanager-${manager_port} ]]); then
 		cd tsmanager-${manager_port}
 
+		mv logs/ /tmp/logs_backup
+
 		if [[ -f .env ]]; then
 			echo "Reading configuration from .env file..."
 			# Use the robust loading method
@@ -188,6 +190,8 @@ install_panel() {
     fi
 	
 	mkdir -p tsmanager-${manager_port}
+
+	mv /tmp/logs_backup tsmanager-${manager_port}/logs 2>/dev/null || true
 
 	tar -xvzf tsmanager-linux-x64.tar.gz -C tsmanager-${manager_port}
 	wait
