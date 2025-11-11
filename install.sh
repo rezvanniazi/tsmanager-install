@@ -155,14 +155,14 @@ install_panel() {
 
 	# Verify token by making an authenticated API request
 	response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${github_token}" \
-	"https://api.github.com/repos/rezvanniazi/ts-manager-bot-websocket/releases/latest")
+	"https://api.github.com/repos/rezvanniazi/tsmanager-release/releases/latest")
 
 	if [ "$response" -eq 200 ]; then
 		echo "✅ Token is valid. Proceeding..."
 		
 		# Get asset ID (original logic)
 		asset_id=$(curl -Ls -H "Authorization: Bearer ${github_token}" \
-		"https://api.github.com/repos/rezvanniazi/ts-manager-bot-websocket/releases/latest" | \
+		"https://api.github.com/repos/rezvanniazi/tsmanager-release/releases/latest" | \
 		jq -r '.assets[] | select(.name == "tsmanager-linux-x64.tar.gz") | .id')
 
 		if [ -n "$asset_id" ]; then
@@ -181,7 +181,7 @@ install_panel() {
 		exit 1
 	fi
 
-	curl -L -H "Authorization: Bearer ${github_token}"   -H "Accept: application/octet-stream"   https://api.github.com/repos/rezvanniazi/ts-manager-bot-websocket/releases/assets/${asset_id} --output tsmanager-linux-x64.tar.gz
+	curl -L -H "Authorization: Bearer ${github_token}"   -H "Accept: application/octet-stream"   https://api.github.com/repos/rezvanniazi/tsmanager-release/releases/assets/${asset_id} --output tsmanager-linux-x64.tar.gz
 
 
 	if [[ $? -ne 0 ]]; then
